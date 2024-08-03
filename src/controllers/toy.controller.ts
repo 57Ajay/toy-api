@@ -19,6 +19,18 @@ const addToy = asyncHandler(async (req: Request, res: Response) => {
     }
 
     try {
+        
+        const existingToy = await prisma.toy.findFirst({
+            where: {
+                name: name,
+                userId: userId
+            }
+        });
+
+        if (existingToy) {
+            return res.status(400).json(new ApiResponse("A toy with the same name already exists", null, 400));
+        }
+
         const newToy = await prisma.toy.create({
             data: {
                 name,
